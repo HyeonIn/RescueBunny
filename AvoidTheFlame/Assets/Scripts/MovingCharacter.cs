@@ -6,11 +6,12 @@ public class MovingCharacter : MonoBehaviour
 {
 
     public float movePower = 1f;
-    public float jumpPower = 1f;
+    public float jumpPower = 2f;
     public int maxHealth = 3;
 
     Rigidbody2D rigid;
     SpriteRenderer Renderer;
+    Animator animator;
 
     Vector3 movement;
     bool isJumping = false;
@@ -21,18 +22,19 @@ public class MovingCharacter : MonoBehaviour
     {
         rigid = gameObject.GetComponent<Rigidbody2D>();
         Renderer = gameObject.GetComponent<SpriteRenderer>();
-
+        animator = gameObject.GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (health == 0)
+        /*if (health == 0)
         {
             if(!isDie)
                 Die();
             return;
         }
+        */
         if (Input.GetKeyDown(KeyCode.UpArrow)){
             if (rigid.velocity.y == 0)
                 isJumping = true;
@@ -40,15 +42,16 @@ public class MovingCharacter : MonoBehaviour
            
     }
     void FixedUpdate(){
-        if (health == 0)
+        /*if (health == 0)
             return;
+        */
         Move();
         Jump();
     }
 
     void Die()
     {
-        isDie = true;
+        //isDie = true;
 
         rigid.velocity = Vector2.zero;
 
@@ -56,21 +59,26 @@ public class MovingCharacter : MonoBehaviour
     }
     void RestartStage()
     {
-        GameManager.RestartStage();
+        //GameManager.RestartStage();
     }
 
     void Move(){
         Vector3 moveVelocity = Vector3.zero;
 
-        if(Input.GetAxisRaw("Horizontal")<0){
+        if(Input.GetAxisRaw("Horizontal") == 0)
+        {
+            animator.SetBool("isMoving", false);
+        }
+        else if(Input.GetAxisRaw("Horizontal")<0)
+        {
+            animator.SetBool("isMoving", true);
             moveVelocity = Vector3.left;
-
-            transform.localScale = new Vector3(-1,1,1);
+            Renderer.flipX = true;
         }
         else if(Input.GetAxisRaw("Horizontal") >0){
+            animator.SetBool("isMoving", true);
             moveVelocity = Vector3.right;
-
-            transform.localScale = new Vector3(1,1,1);
+            Renderer.flipX = false;
         }
 
         transform.position += moveVelocity * movePower * Time.deltaTime;
@@ -94,17 +102,17 @@ public class MovingCharacter : MonoBehaviour
     {
         if (other.gameObject.tag == "enemy" )
         {      
+            Vector2 killVelocity;
+            if(other.gameObject.transform.position.x < this.transform.position.x)
             //바운스
-            Vector2 killVelocity = new Vector2(-0.4f, 0.6f);
-            
+                killVelocity = new Vector2(0.4f, 0.6f);
+            else
+                killVelocity = new Vector2(-0.4f, 0.6f);
             rigid.AddForce(killVelocity, ForceMode2D.Impulse);
-            health--;
+            //  health--;
 
             isUnBeatTime = true;
             StartCoroutine ("UnBeatTime");
-        }
-        if (other.gameObject.tag == "Bottom"){
-            health = 0;
         }
     }
     IEnumerator UnBeatTime()

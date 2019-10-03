@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Character
   - enemy
+  - wall
   layers:
   - Default
   - TransparentFX
@@ -38,8 +39,11 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Background
   m_SortingLayers:
+  - name: Background
+    uniqueID: 3256183269
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
