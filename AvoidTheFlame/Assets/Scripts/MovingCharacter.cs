@@ -114,6 +114,14 @@ public class MovingCharacter : MonoBehaviour
             isUnBeatTime = true;
             StartCoroutine ("UnBeatTime");
         }
+        if (other.gameObject.tag == "coin")
+        {
+            BlockStatus coin = other.gameObject.GetComponent<BlockStatus>();
+            CoinManager.setScore((int)coin.value);
+
+            Destroy(other.gameObject, 0f);
+
+        }
     }
     IEnumerator UnBeatTime()
     {
